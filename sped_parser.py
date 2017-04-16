@@ -88,9 +88,7 @@ def iter_tree(node):
 
 def length(node):
     "count nodes inside"
-    if not node.children:
-        return 1
-    return 1 + sum(length(c) for c in node.children)
+    return len(list(iter_tree(node)))
 
 
 if __name__ == '__main__':
