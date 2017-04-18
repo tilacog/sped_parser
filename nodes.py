@@ -1,7 +1,7 @@
 from itertools import takewhile
 from typing import List, NamedTuple
 
-from record_relations import relations
+from .record_relations import relations
 
 
 # Data model
