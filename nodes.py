@@ -89,13 +89,3 @@ def iter_tree(node):
 def length(node):
     "count nodes inside"
     return len(list(iter_tree(node)))
-
-
-if __name__ == '__main__':
-    import sys
-    SAMPLE_FILE_PATH = sys.argv[1]
-    SPECIFICATION_FILE = 'efd_contribuicoes-0-4008-1.json'
-
-    tree = build_tree(SAMPLE_FILE_PATH, SPECIFICATION_FILE)
-
-    print(as_text(tree))
