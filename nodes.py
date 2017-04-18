@@ -11,12 +11,13 @@ SpedNode = NamedTuple('SpedNode', [('content', str), ('children', List)])
 
 def values(node):
     "returns a SpedNode values as a list"
-    return node.content.split('|')
+    return node.content.split('|') if node.content else []
 
 
 def record_type(node):
     "returns the record type of a SpedNode"
-    return values(node)[0]
+    _values = values(node)
+    return _values[0] if len(_values) > 1 else None
 
 
 def as_text(node):
