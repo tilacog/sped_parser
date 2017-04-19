@@ -1,4 +1,4 @@
-from nodes import SpedNode, length, iter_tree
+from sped_parser.nodes import SpedNode, length, iter_tree
 
 # test length
 # -----------
