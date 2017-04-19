@@ -90,3 +90,15 @@ def iter_tree(node):
 def length(node):
     "count nodes inside"
     return len(list(iter_tree(node)))
+
+
+# Manipulation
+# ------------
+
+def filter_tree(node, func):
+    "removes child nodes (in place) when func evaluates to true"
+    for n in iter_tree(node):
+        for child in n.children:
+            if func(child):
+                n.children.remove(child)
+    return node
