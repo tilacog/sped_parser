@@ -19,7 +19,7 @@ class SpedNode:
 
     @values.setter
     def values(self, list_of_values):
-        self.content = '|'.join(list_of_values)
+        self.content = '|'.join(str(value) for value in list_of_values)
 
     @property
     def record_type(self):
