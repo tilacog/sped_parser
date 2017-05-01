@@ -146,3 +146,8 @@ def forest_get_node(forest: Forest, record_type):
 
 def forest_get_nodes(forest: Forest, record_type):
     yield from forest_find_all(forest, lambda n: n.record_type == record_type)
+
+
+def forest_as_text(forest: Forest):
+    "serializes a forest as a sped file"
+    return ''.join(node.as_text() for node in forest)
