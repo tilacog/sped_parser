@@ -7,6 +7,7 @@ from .record_relations import relations
 # Data model
 # ----------
 class SpedNode:
+
     def __init__(self, content, children=[], parent=None):
         self.content = content if content else ''
         self.children = children
@@ -50,6 +51,10 @@ class SpedNode:
         for c in self.children:
             c.filter(predicate)
 
+    def count(self):
+        "returns number of nodes (including self)"
+        return 1 + sum(c.count() for c in self.children)
+
     def __eq__(self, other):
         if not isinstance(other, SpedNode):
             return False
@@ -61,9 +66,6 @@ class SpedNode:
             return False
         return True
 
-    def __len__(self):
-        return 1 + sum(len(c) for c in self.children)
-
     def __iter__(self):
         yield self
         for child in self.children:
@@ -73,9 +75,7 @@ class SpedNode:
         return self.values[index]
 
     def __repr__(self):
-        len_children = sum(len(c) for c in self.children)
-        return "<SpedNode(%s, %s children)>" % (repr(self.record_type),
-                                                len_children)
+        return "<SpedNode(%s)" % (repr(self.record_type),)
 
 
 # Parser utilities
