@@ -1,5 +1,5 @@
-from itertools import takewhile
-from typing import List, NamedTuple
+from itertools import islice, takewhile
+from typing import List
 
 from .record_relations import relations
 
@@ -7,9 +7,48 @@ from .record_relations import relations
 # Data model
 # ----------
 class SpedNode:
-    def __init__(self, content, children=[]):
-        self.content = content
+    def __init__(self, content, children=[], parent=None):
+        self.content = content if content else ''
         self.children = children
+        self.parent = parent
+
+    @property
+    def values(self):
+        return self.content.split('|')
+
+    @values.setter
+    def values(self, list_of_values):
+        self.content = '|'.join(list_of_values)
+
+    @property
+    def record_type(self):
+        return self.values[0]
+
+    def as_text(self):
+        "renders a SpedNode as a sped-like file"
+        self_content = '|' + self.content + '|\n'
+        children_content = ''.join(c.as_text() for c in self.children)
+        return self_content + children_content
+
+    def find_all(self, predicate):
+        "generator "
+        yield from (node for node in self if predicate(node))
+
+    def find(self, predicate):
+        "returns the first occurence of node that passes the predicate test"
+        iterator = islice(self.find_all(self, predicate), 1)
+        return next(iterator)
+
+    def get_node(self, record_type):
+        "returns the first occurence of node for that record type"
+        return self.find(self, lambda n: n.record_type == record_type)
+
+    def filter(self, predicate):
+        """recursively removes child nodes whenever `predicate(child)` returns
+        true"""
+        self.children = [c for c in self.children if predicate(c)]
+        for c in self.children:
+            c.filter(predicate)
 
     def __eq__(self, other):
         if not isinstance(other, SpedNode):
@@ -22,97 +61,81 @@ class SpedNode:
             return False
         return True
 
+    def __len__(self):
+        return 1 + sum(len(c) for c in self.children)
 
-def values(node):
-    "returns a SpedNode values as a list"
-    return node.content.split('|') if node.content else []
+    def __iter__(self):
+        yield self
+        for child in self.children:
+            yield from child
 
-
-def record_type(node):
-    "returns the record type of a SpedNode"
-    _values = values(node)
-    return _values[0] if len(_values) > 1 else None
-
-
-def as_text(node):
-    "renders a SpedNode as a sped-like file"
-    text = ('|' + '|'.join(values(node)) + '|\n') if node.content else ''
-    text += ''.join(as_text(c) for c in node.children)
-    return text
+    def __repr__(self):
+        len_children = sum(len(c) for c in self.children)
+        return "<SpedNode(%s, %s children)>" % (repr(self.record_type),
+                                                len_children)
 
 
 # Parser utilities
 # ----------------
-def update_tracker(tracker, node):
-    "tracks the last known node for a given record type."
-    rec_type = record_type(node)
-    tracker[rec_type] = node
-    return tracker
-
-
-def strip_line(text):
-    "custom function for stripping characters out of sped lines"
-    return text.strip()[1:-1]
-
-
 def sped_iterator(sped_file_handle):
     "simple iterator for sped files"
+
+    def strip_line(text):
+        "helper function for stripping unwanted characters out of sped lines"
+        return text.strip()[1:-1]
+
     def predicate(text):
         try:
             return text[4] == '|'
-        except KeyError:
+        except IndexError:
             return False
     return takewhile(predicate, (strip_line(i) for i in sped_file_handle))
 
 
 def build_tree(sped_file_path, specification_file_path):
-    """reads a sped file and a specification file and returns a SpedNode
-    tree.
+    """reads a sped file and a specification file and returns a list of nodes
+    (forest).
     """
-    nodes = []
+    forest = []
     tracker = {}
     record_relations = relations(specification_file_path)
 
     with open(sped_file_path, encoding='latin-1') as f:
         for line in sped_iterator(f):
             node = SpedNode(line, [])
-            tracker = update_tracker(tracker, node)
+            tracker[node.record_type] = node
 
-            parent_record_type = record_relations[record_type(node)]
+            parent_record_type = record_relations[node.record_type]
 
             parent = tracker.get(parent_record_type)
+
             if parent:
                 parent.children.append(node)
+                node.parent = parent
             else:
-                nodes.append(node)
+                forest.append(node)
 
-    # return root node
-    return SpedNode(content=None, children=nodes)
-
-
-# Iteration
-# ---------
-def iter_tree(node):
-    "depth-first traverseal of a tree"
-    yield node
-    for child in node.children:
-        yield child
-        for sub_child in child.children:
-            yield from iter_tree(sub_child)
+        return forest
 
 
-def length(node):
-    "count nodes inside"
-    return len(list(iter_tree(node)))
+# Forest functions
+# ----------------
+Forest = List[SpedNode]
 
 
-# Manipulation
-# ------------
+def forest_iterator(forest: Forest):
+    for node in forest:
+        yield from node
 
-def filter_tree(node, func):
-    "removes child nodes (in place) when func evaluates to true"
-    for n in iter_tree(node):
-        for child in n.children:
-            if func(child):
-                n.children.remove(child)
-    return node
+
+def forest_find_all(forest: Forest, predicate):
+    for node in forest:
+        yield from node.find_all(predicate)
+
+
+def forest_find(forest: Forest, predicate):
+    return next(islice(forest_find_all(forest, predicate), 1))
+
+
+def forest_get_node(forest: Forest, record_type):
+    return forest_find(forest, lambda n: n.record_type == record_type)
