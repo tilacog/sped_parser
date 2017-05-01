@@ -1,12 +1,9 @@
-from sped_parser.nodes import SpedNode, filter_tree, iter_tree, length
+from sped_parser.nodes import SpedNode
 
-
-# test length
-# -----------
 
 def test_length_flat():
     node = SpedNode(None, [])
-    assert length(node) == 1
+    assert len(node) == 1
 
 
 def test_length_depth_one():
@@ -17,7 +14,7 @@ def test_length_depth_one():
         SpedNode(None, []),
     ])
 
-    assert length(node) == 4  # 1 + 3
+    assert len(node) == 4  # 1 + 3
 
 
 def test_length_depth_two():
@@ -29,21 +26,22 @@ def test_length_depth_two():
         ])
     ])
 
-    assert length(node) == 4
+    assert len(node) == 4
 
 
 # test iter_tree
 # --------------
 def test_iter_tree_single_structure():
     node = SpedNode(None, [])
-    assert list(iter_tree(node)) == [node]
+    assert list(node) == [node]
 
 
 def test_iter_tree_simple_nested_structure():
     child = SpedNode(None, [])
     parent = SpedNode(None, [child])
 
-    assert list(iter_tree(parent)) == [parent, child]
+    assert list(parent) == [parent, child]
+
 
 def test_iter_tree_complex_nested_structure():
     child = SpedNode(None, [])
@@ -51,7 +49,7 @@ def test_iter_tree_complex_nested_structure():
     uncle = SpedNode(None, [])
     root = SpedNode(None, [parent, uncle])
 
-    assert list(iter_tree(root)) == [root, parent, child, uncle]
+    assert list(root) == [root, parent, child, uncle]
 
 
 # test filter_tree
@@ -62,9 +60,11 @@ def test_filter_tree_simple_case():
         SpedNode('bar', [])
     ])
 
-    filter_tree(node, lambda n: n.content == 'foo')
+    node.filter(lambda n: n.content != 'foo')
 
-    assert node == SpedNode(None, [SpedNode('bar', [])])
+    expected = SpedNode(None, [SpedNode('bar', [])])
+    assert node == expected
+
 
 def test_filter_tree_complex_case():
     child = SpedNode('child', [])
@@ -72,6 +72,6 @@ def test_filter_tree_complex_case():
     uncle = SpedNode(None, [])
     root = SpedNode(None, [parent, uncle])
 
-    filter_tree(root, lambda n: n.content == 'child')
+    root.filter(lambda n: n.content != 'child')
 
-    assert list(iter_tree(root)) == [root, parent, uncle]
+    assert list(root) == [root, parent, uncle]
