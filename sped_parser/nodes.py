@@ -6,7 +6,21 @@ from .record_relations import relations
 
 # Data model
 # ----------
-SpedNode = NamedTuple('SpedNode', [('content', str), ('children', List)])
+class SpedNode:
+    def __init__(self, content, children=[]):
+        self.content = content
+        self.children = children
+
+    def __eq__(self, other):
+        if not isinstance(other, SpedNode):
+            return False
+
+        if self.content != other.content:
+            return False
+
+        if self.children != other.children:
+            return False
+        return True
 
 
 def values(node):
