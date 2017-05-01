@@ -29,7 +29,7 @@ def test_length_depth_two():
     assert len(node) == 4
 
 
-# test iter_tree
+# test iteration
 # --------------
 def test_iter_tree_single_structure():
     node = SpedNode(None, [])
@@ -52,7 +52,7 @@ def test_iter_tree_complex_nested_structure():
     assert list(root) == [root, parent, child, uncle]
 
 
-# test filter_tree
+# test filter
 # ----------------
 def test_filter_tree_simple_case():
     node = SpedNode(None, [
@@ -75,3 +75,12 @@ def test_filter_tree_complex_case():
     root.filter(lambda n: n.content != 'child')
 
     assert list(root) == [root, parent, uncle]
+
+
+# test getitem
+# ------------
+def test_getitem():
+    node = SpedNode('foo|bar|baz')
+    assert node[0] == 'foo'
+    assert node[1] == 'bar'
+    assert node[2] == 'baz'

@@ -69,6 +69,9 @@ class SpedNode:
         for child in self.children:
             yield from child
 
+    def __getitem__(self, index):
+        return self.values[index]
+
     def __repr__(self):
         len_children = sum(len(c) for c in self.children)
         return "<SpedNode(%s, %s children)>" % (repr(self.record_type),
