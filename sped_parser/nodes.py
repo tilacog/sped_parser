@@ -142,3 +142,7 @@ def forest_find(forest: Forest, predicate):
 
 def forest_get_node(forest: Forest, record_type):
     return forest_find(forest, lambda n: n.record_type == record_type)
+
+
+def forest_get_nodes(forest: Forest, record_type):
+    yield from forest_find_all(forest, lambda n: n.record_type == record_type)
