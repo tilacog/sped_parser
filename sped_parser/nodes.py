@@ -66,6 +66,9 @@ class SpedNode:
             return False
         return True
 
+    def __hash__(self):
+        return hash(self.content)
+
     def __iter__(self):
         yield self
         for child in self.children:
