@@ -154,3 +154,14 @@ def forest_get_nodes(forest: Forest, record_type):
 def forest_as_text(forest: Forest):
     "serializes a forest as a sped file"
     return ''.join(node.as_text() for node in forest)
+
+
+def forest_size(forest):
+    "returns the count of all nodes inside a forest"
+    return sum(tree.count() for tree in forest)
+
+
+def forest_size_by_prefix(forest, prefix):
+    "returns the count of all forest nodes for a given record_type prefix"
+    return sum(tree.count() for tree in forest
+               if tree.record_type.startswith(prefix))
