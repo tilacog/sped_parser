@@ -3,7 +3,7 @@ from sped_parser.nodes import SpedNode
 
 def test_length_flat():
     node = SpedNode(None, [])
-    assert len(node) == 1
+    assert node.count() == 1
 
 
 def test_length_depth_one():
@@ -14,7 +14,7 @@ def test_length_depth_one():
         SpedNode(None, []),
     ])
 
-    assert len(node) == 4  # 1 + 3
+    assert node.count() == 4  # 1 + 3
 
 
 def test_length_depth_two():
@@ -26,7 +26,7 @@ def test_length_depth_two():
         ])
     ])
 
-    assert len(node) == 4
+    assert node.count() == 4
 
 
 # test iteration
