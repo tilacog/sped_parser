@@ -84,3 +84,17 @@ def test_getitem():
     assert node[0] == 'foo'
     assert node[1] == 'bar'
     assert node[2] == 'baz'
+
+
+# test update
+# -----------
+def test_update():
+    node = SpedNode('foo|bar|baz')
+    node.update(2, 'qux')
+    assert node.values == ['foo', 'bar', 'qux']
+
+
+def test_update_with_slice():
+    node = SpedNode('foo|bar|baz')
+    node.update(slice(0, 2), ['hey', 'joe'])
+    assert node.values == ['hey', 'joe', 'baz']

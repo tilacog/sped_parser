@@ -55,6 +55,11 @@ class SpedNode:
         "returns number of nodes (including self)"
         return 1 + sum(c.count() for c in self.children)
 
+    def update(self, index, new_value):
+        values = list(self.values)
+        values[index] = new_value
+        self.values = values
+
     def __eq__(self, other):
         if not isinstance(other, SpedNode):
             return False
