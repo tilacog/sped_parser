@@ -32,17 +32,22 @@ class SpedNode:
         return self_content + children_content
 
     def find_all(self, predicate):
-        "generator "
+        "return all direct "
         yield from (node for node in self if predicate(node))
 
     def find(self, predicate):
         "returns the first occurence of node that passes the predicate test"
-        iterator = islice(self.find_all(self, predicate), 1)
+        iterator = islice(self.find_all(predicate), 1)
         return next(iterator)
 
     def get_node(self, record_type):
         "returns the first occurence of node for that record type"
-        return self.find(self, lambda n: n.record_type == record_type)
+        return next(self.get_nodes(record_type))
+
+    def get_nodes(self, record_type):
+        "generates all descendant nodes that match the given record type"
+        generator = self.find_all(lambda n: n.record_type == record_type)
+        yield from generator
 
     def filter(self, predicate):
         """recursively removes child nodes whenever `predicate(child)` returns
