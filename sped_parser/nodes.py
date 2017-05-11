@@ -65,6 +65,19 @@ class SpedNode:
         values[index] = new_value
         self.values = values
 
+    def insert(self, node):
+        "inserts a node into self.children in an appropriate position"
+        pos = (idx for idx, sibling in enumerate(self.children)
+               if sibling.record_type >= node.record_type)
+        try:
+            index = next(pos)
+        except StopIteration:
+            # self.children is an empty list or it only contains nodes from the
+            # same record type
+            index = 0
+
+        self.children.insert(index, node)
+
     def __eq__(self, other):
         if not isinstance(other, SpedNode):
             return False

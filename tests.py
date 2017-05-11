@@ -99,7 +99,8 @@ def test_update_with_slice():
     node.update(slice(0, 2), ['hey', 'joe'])
     assert node.values == ['hey', 'joe', 'baz']
 
-
+# test get_nodes
+# --------------
 def test_get_node():
     children = [
         SpedNode('foo'),
@@ -124,5 +125,14 @@ def test_get_nodes():
     assert result == [SpedNode('bar')] * 2
 
 
+# test insert
+# -----------
 
+children = [SpedNode('a'), SpedNode('c')]
+parent = SpedNode(None, children=children)
 
+parent.insert(SpedNode('b'))
+
+assert parent.children == [
+    SpedNode('a'), SpedNode('b'), SpedNode('c')
+]
