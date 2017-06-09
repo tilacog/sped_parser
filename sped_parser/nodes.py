@@ -101,7 +101,7 @@ class SpedNode:
         return self.values[index]
 
     def __repr__(self):
-        return "<SpedNode(%s)" % (repr(self.record_type),)
+        return "<SpedNode(%s)>" % (repr(self.record_type),)
 
 
 # Parser utilities
