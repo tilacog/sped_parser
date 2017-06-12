@@ -52,6 +52,18 @@ def test_iter_tree_complex_nested_structure():
     assert list(root) == [root, parent, child, uncle]
 
 
+def test_iter_wont_raise_recursion_error():
+    "this test setup used to raise a RecursiveErrror due to list.insert method"
+    parent = SpedNode('parent')
+    son = SpedNode('son', children=[SpedNode('grandchild')])
+
+    assert parent.count() == 1
+    assert son.count() == 2
+
+    parent.insert(son)
+
+    assert parent.count() == 3
+
 # test filter
 # ----------------
 def test_filter_tree_simple_case():

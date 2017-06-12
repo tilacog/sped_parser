@@ -76,7 +76,8 @@ class SpedNode:
             # same record type
             index = 0
 
-        self.children.insert(index, node)
+        # using slices because `list.insert` was causing RecursionErrors
+        self.children = self.children[:index] + [node] + self.children[index:]
 
     def __eq__(self, other):
         if not isinstance(other, SpedNode):
