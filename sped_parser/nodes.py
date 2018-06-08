@@ -134,13 +134,12 @@ def sped_iterator(sped_file_handle):
     return takewhile(predicate, (strip_line(i) for i in sped_file_handle))
 
 
-def build_forest(sped_file_path, specification_file_path):
-    """reads a sped file and a specification file and returns a list of nodes
+def build_forest(sped_file_path, record_relations):
+    """reads a sped file and a relations dictionary and returns a list of nodes
     (forest).
     """
     forest = []
     tracker = {}
-    record_relations = relations(specification_file_path)
 
     with open(sped_file_path, encoding='latin-1') as f:
         for line in sped_iterator(f):
