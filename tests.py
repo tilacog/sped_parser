@@ -64,6 +64,27 @@ def test_iter_wont_raise_recursion_error():
 
     assert parent.count() == 3
 
+
+def test_parent_iteration():
+    child = SpedNode('child', [])
+    parent = SpedNode('parent', [])
+    parent.insert(child)
+    assert child.parent is parent
+    assert list(child.ancestors()) == [child, parent]
+
+    # test another insertion method
+    child2 = SpedNode('child2', [])
+    parent2 = SpedNode('parent2', [child2])
+    assert child2.parent is parent2
+    assert list(child2.ancestors()) == [child2, parent2]
+
+    # yet another insertion method
+    parent3 = SpedNode('parent3', [])
+    child3 = SpedNode('child3', [], parent=parent3)
+    assert child3.parent is parent3
+    assert list(child3.ancestors()) == [child3, parent3]
+
+
 # test filter
 # ----------------
 def test_filter_tree_simple_case():

@@ -10,7 +10,13 @@ class SpedNode:
 
     def __init__(self, content, children=[], parent=None):
         self.content = content if content else ''
-        self.children = children
+
+        self.children = list(children)
+        for child_node in children:
+            child_node.parent = self
+
+        if parent and self not in parent.children:
+                parent.insert(self)
         self.parent = parent
 
     @property
@@ -78,6 +84,12 @@ class SpedNode:
 
         # using slices because `list.insert` was causing RecursionErrors
         self.children = self.children[:index] + [node] + self.children[index:]
+        node.parent = self
+
+    def ancestors(self):
+        yield self
+        if self.parent:
+            yield from self.parent.ancestors()
 
     def __eq__(self, other):
         if not isinstance(other, SpedNode):
