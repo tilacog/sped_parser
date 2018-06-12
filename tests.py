@@ -160,12 +160,45 @@ def test_get_nodes():
 
 # test insert
 # -----------
+def test_insert_order_pre():
+    children = [SpedNode('b'), SpedNode('c')]
+    parent = SpedNode(None, children=children)
+    parent.insert(SpedNode('a'))
+    assert parent.children == [
+        SpedNode('a'), SpedNode('b'), SpedNode('c')
+    ]
 
-children = [SpedNode('a'), SpedNode('c')]
-parent = SpedNode(None, children=children)
 
-parent.insert(SpedNode('b'))
+def test_insert_order_mid():
+    children = [SpedNode('a'), SpedNode('c')]
+    parent = SpedNode(None, children=children)
+    parent.insert(SpedNode('b'))
+    assert parent.children == [
+        SpedNode('a'), SpedNode('b'), SpedNode('c')
+    ]
 
-assert parent.children == [
-    SpedNode('a'), SpedNode('b'), SpedNode('c')
-]
+
+def test_insert_order_pos():
+    children = [SpedNode('a'), SpedNode('b')]
+    parent = SpedNode(None, children=children)
+    parent.insert(SpedNode('c'))
+    assert parent.children == [
+        SpedNode('a'), SpedNode('b'), SpedNode('c')
+    ]
+
+def test_insert_order_mixed_pre():
+    children = [SpedNode('b'), SpedNode('b')]
+    parent = SpedNode(None, children=children)
+    parent.insert(SpedNode('a'))
+    assert parent.children == [
+        SpedNode('a'), SpedNode('b'), SpedNode('b')
+    ]
+
+
+def test_insert_order_mixed_pos():
+    children = [SpedNode('a'), SpedNode('a')]
+    parent = SpedNode(None, children=children)
+    parent.insert(SpedNode('b'))
+    assert parent.children == [
+        SpedNode('a'), SpedNode('a'), SpedNode('b')
+    ]

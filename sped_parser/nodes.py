@@ -73,17 +73,22 @@ class SpedNode:
 
     def insert(self, node):
         "inserts a node into self.children in an appropriate position"
-        pos = (idx for idx, sibling in enumerate(self.children)
-               if sibling.record_type >= node.record_type)
-        try:
-            index = next(pos)
-        except StopIteration:
-            # self.children is an empty list or it only contains nodes from the
-            # same record type
-            index = 0
 
-        # using slices because `list.insert` was causing RecursionErrors
-        self.children = self.children[:index] + [node] + self.children[index:]
+        # base case: children is an empty list
+        if not self.children:
+            self.children.append(node)
+        else:
+            pos = (idx for idx, sibling in enumerate(self.children)
+                   if sibling.record_type >= node.record_type)
+            try:
+                index = next(pos)
+            except StopIteration:
+                self.children.append(node)
+            else:
+                # using slices because `list.insert` causes RecursionErrors
+                self.children = (self.children[:index]
+                                 + [node]
+                                 + self.children[index:])
         node.parent = self
 
     def ancestors(self):
