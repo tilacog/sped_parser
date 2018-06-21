@@ -1,8 +1,6 @@
 from itertools import islice, takewhile
 from typing import List
 
-from .record_relations import relations
-
 
 # Data model
 # ----------
@@ -19,7 +17,7 @@ class SpedNode:
                 content = '.'
             else:
                 content = content.strip()
-                if content[0] == "|" or content[-1] == "|":
+                if content[0] == "|" and content[-1] == "|":
                     content = content[1:-1]
             self.values = content.split("|")
 
@@ -71,9 +69,8 @@ class SpedNode:
         return 1 + sum(c.count() for c in self.children)
 
     def update(self, index, new_value):
-        values = list(self.values)
-        values[index] = new_value
-        self.values = values
+        "DEPRECATED. Use `node[index] = new_value` instead."
+        self.values[index] = new_value
 
     def insert(self, node):
         "inserts a node into self.children in an appropriate position"

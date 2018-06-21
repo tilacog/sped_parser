@@ -224,3 +224,11 @@ def test_item_assingment_slices():
 
     node[0:3] = ["1", "2", "3"]
     assert node.values == list("123DEF")
+
+
+# test record_type
+# ----------------
+def test_record_type():
+    node = SpedNode("|FOO|ABC|")
+    assert node.values == ["FOO", "ABC"]
+    assert node.record_type == "FOO"
