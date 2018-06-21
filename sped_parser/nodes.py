@@ -9,7 +9,19 @@ from .record_relations import relations
 class SpedNode:
 
     def __init__(self, content, children=[], parent=None):
-        self.content = content if content else ''
+        if isinstance(content, list):
+            assert content
+            for el in content:
+                assert isinstance(el, str)
+            self.values = content
+        elif isinstance(content, str):
+            if not content:
+                content = '.'
+            else:
+                content = content.strip()
+                if content[0] == "|" or content[-1] == "|":
+                    content = content[1:-1]
+            self.values = content.split("|")
 
         self.children = list(children)
         for child_node in children:
@@ -20,20 +32,12 @@ class SpedNode:
         self.parent = parent
 
     @property
-    def values(self):
-        return self.content.split('|')
-
-    @values.setter
-    def values(self, list_of_values):
-        self.content = '|'.join(str(value) for value in list_of_values)
-
-    @property
     def record_type(self):
         return self.values[0]
 
     def as_text(self):
         "renders a SpedNode as a sped-like file"
-        self_content = '|' + self.content + '|\n'
+        self_content = '|' + '|'.join(self.values) + '|\n'
         children_content = ''.join(c.as_text() for c in self.children)
         return self_content + children_content
 
@@ -100,7 +104,7 @@ class SpedNode:
         if not isinstance(other, SpedNode):
             return False
 
-        if self.content != other.content:
+        if self.values != other.values:
             return False
 
         if self.children != other.children:
@@ -108,7 +112,7 @@ class SpedNode:
         return True
 
     def __hash__(self):
-        return hash(self.content)
+        return hash(tuple(self.values))
 
     def __iter__(self):
         yield self
@@ -117,6 +121,9 @@ class SpedNode:
 
     def __getitem__(self, index):
         return self.values[index]
+
+    def __setitem__(self, key, value):
+        self.values[key] = value
 
     def __repr__(self):
         return "<SpedNode(%s)>" % (repr(self.record_type),)

@@ -2,16 +2,16 @@ from sped_parser.nodes import SpedNode
 
 
 def test_length_flat():
-    node = SpedNode(None, [])
+    node = SpedNode('', [])
     assert node.count() == 1
 
 
 def test_length_depth_one():
     # this node have 3 children with zero children each
-    node = SpedNode(None, [
-        SpedNode(None, []),
-        SpedNode(None, []),
-        SpedNode(None, []),
+    node = SpedNode('', [
+        SpedNode('', []),
+        SpedNode('', []),
+        SpedNode('', []),
     ])
 
     assert node.count() == 4  # 1 + 3
@@ -19,10 +19,10 @@ def test_length_depth_one():
 
 def test_length_depth_two():
     # this node has child that has two children.
-    node = SpedNode(None, [
-        SpedNode(None, [
-            SpedNode(None, []),
-            SpedNode(None, []),
+    node = SpedNode('', [
+        SpedNode('', [
+            SpedNode('', []),
+            SpedNode('', []),
         ])
     ])
 
@@ -32,22 +32,22 @@ def test_length_depth_two():
 # test iteration
 # --------------
 def test_iter_tree_single_structure():
-    node = SpedNode(None, [])
+    node = SpedNode('', [])
     assert list(node) == [node]
 
 
 def test_iter_tree_simple_nested_structure():
-    child = SpedNode(None, [])
-    parent = SpedNode(None, [child])
+    child = SpedNode('', [])
+    parent = SpedNode('', [child])
 
     assert list(parent) == [parent, child]
 
 
 def test_iter_tree_complex_nested_structure():
-    child = SpedNode(None, [])
-    parent = SpedNode(None, [child])
-    uncle = SpedNode(None, [])
-    root = SpedNode(None, [parent, uncle])
+    child = SpedNode('child', [])
+    parent = SpedNode('parent', [child])
+    uncle = SpedNode('uncle', [])
+    root = SpedNode('root', [parent, uncle])
 
     assert list(root) == [root, parent, child, uncle]
 
@@ -88,24 +88,24 @@ def test_parent_iteration():
 # test filter
 # ----------------
 def test_filter_tree_simple_case():
-    node = SpedNode(None, [
+    node = SpedNode('', [
         SpedNode('foo', []),
         SpedNode('bar', [])
     ])
 
-    node.filter(lambda n: n.content != 'foo')
+    node.filter(lambda n: n.values[0] != 'foo')
 
-    expected = SpedNode(None, [SpedNode('bar', [])])
+    expected = SpedNode('', [SpedNode('bar', [])])
     assert node == expected
 
 
 def test_filter_tree_complex_case():
     child = SpedNode('child', [])
-    parent = SpedNode(None, [child])
-    uncle = SpedNode(None, [])
-    root = SpedNode(None, [parent, uncle])
+    parent = SpedNode('', [child])
+    uncle = SpedNode('', [])
+    root = SpedNode('', [parent, uncle])
 
-    root.filter(lambda n: n.content != 'child')
+    root.filter(lambda n: n.values[0] != 'child')
 
     assert list(root) == [root, parent, uncle]
 
@@ -132,6 +132,7 @@ def test_update_with_slice():
     node.update(slice(0, 2), ['hey', 'joe'])
     assert node.values == ['hey', 'joe', 'baz']
 
+
 # test get_nodes
 # --------------
 def test_get_node():
@@ -140,10 +141,11 @@ def test_get_node():
         SpedNode('bar'),
         SpedNode('baz'),
     ]
-    parent = SpedNode(None, children)
+    parent = SpedNode('', children)
 
     result = parent.get_node('bar')
     assert result == SpedNode('bar')
+
 
 def test_get_nodes():
     children = [
@@ -152,7 +154,7 @@ def test_get_nodes():
         SpedNode('baz'),
         SpedNode('bar'),
     ]
-    parent = SpedNode(None, children)
+    parent = SpedNode('', children)
 
     result = list(parent.get_nodes('bar'))
     assert result == [SpedNode('bar')] * 2
@@ -162,7 +164,7 @@ def test_get_nodes():
 # -----------
 def test_insert_order_pre():
     children = [SpedNode('b'), SpedNode('c')]
-    parent = SpedNode(None, children=children)
+    parent = SpedNode('', children=children)
     parent.insert(SpedNode('a'))
     assert parent.children == [
         SpedNode('a'), SpedNode('b'), SpedNode('c')
@@ -171,7 +173,7 @@ def test_insert_order_pre():
 
 def test_insert_order_mid():
     children = [SpedNode('a'), SpedNode('c')]
-    parent = SpedNode(None, children=children)
+    parent = SpedNode('', children=children)
     parent.insert(SpedNode('b'))
     assert parent.children == [
         SpedNode('a'), SpedNode('b'), SpedNode('c')
@@ -180,15 +182,16 @@ def test_insert_order_mid():
 
 def test_insert_order_pos():
     children = [SpedNode('a'), SpedNode('b')]
-    parent = SpedNode(None, children=children)
+    parent = SpedNode('', children=children)
     parent.insert(SpedNode('c'))
     assert parent.children == [
         SpedNode('a'), SpedNode('b'), SpedNode('c')
     ]
 
+
 def test_insert_order_mixed_pre():
     children = [SpedNode('b'), SpedNode('b')]
-    parent = SpedNode(None, children=children)
+    parent = SpedNode('', children=children)
     parent.insert(SpedNode('a'))
     assert parent.children == [
         SpedNode('a'), SpedNode('b'), SpedNode('b')
@@ -197,8 +200,27 @@ def test_insert_order_mixed_pre():
 
 def test_insert_order_mixed_pos():
     children = [SpedNode('a'), SpedNode('a')]
-    parent = SpedNode(None, children=children)
+    parent = SpedNode('', children=children)
     parent.insert(SpedNode('b'))
     assert parent.children == [
         SpedNode('a'), SpedNode('a'), SpedNode('b')
     ]
+
+
+# test item assignment
+# --------------------
+def test_item_assignment_simple():
+    node = SpedNode('|A|B|C|D|E|F|')
+    assert node.values == list("ABCDEF")
+
+    node[0] = "Z"
+    node[-1] = "W"
+    assert node.values == list("ZBCDEW")
+
+
+def test_item_assingment_slices():
+    node = SpedNode('|A|B|C|D|E|F|')
+    assert node.values == list("ABCDEF")
+
+    node[0:3] = ["1", "2", "3"]
+    assert node.values == list("123DEF")
