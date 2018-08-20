@@ -97,6 +97,9 @@ class SpedNode:
         if self.parent:
             yield from self.parent.ancestors()
 
+    def delete(self):
+        self.parent.children.remove(self)
+
     def __eq__(self, other):
         if not isinstance(other, SpedNode):
             return False

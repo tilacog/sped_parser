@@ -232,3 +232,30 @@ def test_record_type():
     node = SpedNode("|FOO|ABC|")
     assert node.values == ["FOO", "ABC"]
     assert node.record_type == "FOO"
+
+
+# test deletion
+# -------------
+def test_deletion():
+    child = SpedNode('child', [])
+    parent = SpedNode('parent', [])
+    parent.insert(child)
+
+    child.delete()
+    assert not parent.children
+
+
+def test_deletion_with_siblings():
+    child_1, child_2, child_3 = (SpedNode('child', []),
+                                 SpedNode('child', []),
+                                 SpedNode('child', []))
+    parent = SpedNode('parent',  [child_1, child_2, child_3])
+
+    child_2.delete()
+    assert parent.children == [child_1, child_3]
+
+    child_1.delete()
+    assert parent.children == [child_3]
+
+    child_3.delete()
+    assert not parent.children
